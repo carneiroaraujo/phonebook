@@ -1,7 +1,8 @@
 const express = require('express') 
 const morgan = require('morgan')
-
 const app = express()
+const cors = require('cors')
+app.use(cors())
 app.use(express.json())
 app.use(morgan(function (tokens, req, res) {
   return [
@@ -14,7 +15,6 @@ app.use(morgan(function (tokens, req, res) {
     
   ].join(' ')
 }))
-const PORT = 3001
 
 let entries = [
     { 
@@ -89,6 +89,7 @@ function unknownEnpoint(request, response, next) {
 }
 
 app.use(unknownEnpoint)
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`);
