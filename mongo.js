@@ -7,7 +7,7 @@ if (numberOfArgs == 2) {
     process.exit(1)
 } 
 
-const url = `mongodb+srv://joaosheep95:${process.argv[2]}@cluster0.4qyvian.mongodb.net/phonebookApp?retryWrites=true&w=majority`
+const url = process.env.URI
 mongoose.set("strictQuery", false)
 mongoose.connect(url)
 
