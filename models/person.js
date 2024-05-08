@@ -25,4 +25,8 @@ personSchema.set("toJSON", {
     }
 })
 
-module.exports = new mongoose.model("Person", personSchema)
+
+const model = new mongoose.model("Person", personSchema)
+
+
+module.exports = model
