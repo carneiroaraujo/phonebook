@@ -39,7 +39,7 @@ app.get("/info", (request, response, next) => {
     .catch(error=>next(error))
 })
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const {id} = request.params
   
   Person.findById(id)
@@ -61,7 +61,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
 
 })
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
 
   const { name, number } = request.body
 
@@ -73,6 +73,7 @@ app.post("/api/persons", (request, response) => {
       .then(result => {
         response.json(result)
       })
+      .catch(error=>next(error))
   }
 
 })
@@ -82,14 +83,17 @@ app.put("/api/persons/:id", (request, response, next)=>{
   const {name, number} = request.body
   const person = {name, number}
 
-  Person.findByIdAndUpdate(id, person, {new:true})
+  Person.findByIdAndUpdate(id, person, {new:true, runValidators:true}) 
     .then(result => {
-      response.json(result)
+      if (result) {
+        response.json(result)
+      } else {
+        return response.status(404).json({error: "Not found"})
+      }
     })
-    .catch(error=>next(error)
-  )
-
-
+    .catch(error=>{
+      next(error)
+    })
 }) 
 
 function unknownEnpoint(request, response, next) {
@@ -100,7 +104,9 @@ function errorHandler(error, request, response, next) {
 
   if(error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id"})
-  }
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({error: error.message})
+  } 
   next(error)
 }
 
